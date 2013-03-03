@@ -75,5 +75,5 @@ while(i>=0)    {                  // Loop for uncounted bars
 }
 
 int deinit()     {
-   Comment("Dynamic Breakout Levels (k-days Hi, Lo) - as a derivative of daily StdDev change");
+   Comment("");
 }

@@ -81,7 +81,7 @@ while(i>=0)    {                  // Loop for uncounted bars
 }
 
 int deinit()     {
-   Comment("Dynamic Breakout Levels (k-days Hi, Lo) - as a derivative of daily StdDev change");
+   Comment("");
 }
 
 int ProcessAlerts()   {                                                                                                                         //
@@ -90,7 +90,7 @@ string AlertText = "";
     // Upper band
     // === Alert processing for crossover UP (indicator line crosses ABOVE signal line) 
     if (Close[AlertCandle] > HighBuffer[AlertCandle]  &&  Close[AlertCandle+1] <= HighBuffer[AlertCandle+1])  { 
-      AlertText = Symbol() + "," + TFToStr(Period()) + ": H :" + AlertTextCrossUp;
+      AlertText = Symbol() + "," + TFToStr(Period()) + ": H :" + AlertTextCrossUp + ". \rPrice = " + DoubleToStr(Ask, 5) + ", H = " + DoubleToStr(H, 5) ;
       if (ShowChartAlerts)          Alert(AlertText);
       if (AlertEmailSubject > "")   SendMail(AlertEmailSubject,AlertText);
       if(SendNotifications) SendNotification(AlertText);
@@ -98,7 +98,7 @@ string AlertText = "";
     }                                                                                                                                          
     // === Alert processing for crossover DOWN (indicator line crosses BELOW signal line) 
     if (Close[AlertCandle] < HighBuffer[AlertCandle]  && Close[AlertCandle+1] >= HighBuffer[AlertCandle+1])  {
-      AlertText = Symbol() + "," + TFToStr(Period()) + ": H :" + AlertTextCrossDown;
+      AlertText = Symbol() + "," + TFToStr(Period()) + ": H :" + AlertTextCrossDown + ". \rPrice = " + DoubleToStr(Ask, 5) + ", H = " + DoubleToStr(H, 5) ;
       if (ShowChartAlerts)          Alert(AlertText); 
       if (AlertEmailSubject > "")   SendMail(AlertEmailSubject,AlertText);
       if(SendNotifications) SendNotification(AlertText);
@@ -107,7 +107,7 @@ string AlertText = "";
     // Lower band
     // === Alert processing for crossover UP (indicator line crosses ABOVE signal line)
     if (Close[AlertCandle] > LowBuffer[AlertCandle]  &&  Close[AlertCandle+1] <= LowBuffer[AlertCandle+1])  { 
-      AlertText = Symbol() + "," + TFToStr(Period()) + ": L :" + AlertTextCrossUp;
+      AlertText = Symbol() + "," + TFToStr(Period()) + ": L :" + AlertTextCrossUp + ". \rPrice = " + DoubleToStr(Bid, 5) + ", L = " + DoubleToStr(L, 5) ;
       if (ShowChartAlerts)          Alert(AlertText);
       if (AlertEmailSubject > "")   SendMail(AlertEmailSubject,AlertText);
       if(SendNotifications) SendNotification(AlertText);
@@ -115,7 +115,7 @@ string AlertText = "";
     }                                                                                                                                          
     // === Alert processing for crossover DOWN (indicator line crosses BELOW signal line) 
     if (Close[AlertCandle] < LowBuffer[AlertCandle]  && Close[AlertCandle+1] >= LowBuffer[AlertCandle+1])  {
-      AlertText = Symbol() + "," + TFToStr(Period()) + ": L :" + AlertTextCrossDown;
+      AlertText = Symbol() + "," + TFToStr(Period()) + ": L :" + AlertTextCrossDown + ". \rPrice = " + DoubleToStr(Bid, 5) + ", L = " + DoubleToStr(L, 5) ;
       if (ShowChartAlerts)          Alert(AlertText); 
       if (AlertEmailSubject > "")   SendMail(AlertEmailSubject,AlertText);
       if(SendNotifications) SendNotification(AlertText);
