@@ -13,6 +13,7 @@
 extern bool    quietHours          = true;
 extern int     quietStart          = 22;
 extern int     quietStop           =  6;
+extern int     minute              =  45;
 bool           AlertFlag           = false;
 
 int init()
@@ -28,14 +29,14 @@ int start()    {
   if (quietHours == true || AlertFlag == true) {
     if(Hour() >= quietStart || Hour()< quietStop )
       return(0); // exit
-    if(Minute() > 45)
+    if(Minute() > minute)
       AlertFlag = false;
   }
 
   if( !IsConnected() ) 
     AlertText = "No connection";
 
-  if (Minute() == 45 && AlertFlag == false) {  
+  if (Minute() == minute && AlertFlag == false) {  
       SendNotification(AlertText);
       AlertFlag = true;
   }
