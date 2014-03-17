@@ -1,10 +1,10 @@
 //+------------------------------------------------------------------+
-//|                                                   levels.mq4     |
-//| rysuje dwa zadane poziomy wsparcia i dwa oporu                   |
-//| dodatkowo wysyła alerty                                          |
+//|                                                   levels.mq4              |
+//| rysuje dwa zadane poziomy wsparcia i dwa oporu  |
+//| dodatkowo wysyła alerty                                         |
 //+------------------------------------------------------------------+
 #property copyright "Copyright © 2013, chew-z"
-#property link      "levels - "
+#property link      "levels_4a"
 #include <TradeTools.mqh>
 #include <TradeContext.mq4>
 #property indicator_chart_window
@@ -118,7 +118,7 @@ string AlertText = "";
     }
    // === Alert processing for crossover UP (indicator line crosses ABOVE signal line)
    if (Close[AlertCandle] > Low2Buffer[AlertCandle]  &&  Close[AlertCandle+1] <= Low2Buffer[AlertCandle+1])  { 
-      AlertText = Symbol() + "," + TFToStr(Period()) + ": L1 :" + AlertTextCrossUp + ". \rPrice = " + DoubleToStr(Bid, 5) + ", L2 = " + DoubleToStr(L2, 5) ;
+      AlertText = Symbol() + "," + TFToStr(Period()) + ": L2 :" + AlertTextCrossUp + ". \rPrice = " + DoubleToStr(Bid, 5) + ", L2 = " + DoubleToStr(L2, 5) ;
       if (ShowChartAlerts)          Alert(AlertText);
       if (AlertEmailSubject > "")   SendMail(AlertEmailSubject,AlertText);
       if(SendNotifications) SendNotification(AlertText);
@@ -126,7 +126,7 @@ string AlertText = "";
     }                                                                                                                                          
     // === Alert processing for crossover DOWN (indicator line crosses BELOW signal line) 
     if (Close[AlertCandle] < Low2Buffer[AlertCandle]  && Close[AlertCandle+1] >= Low2Buffer[AlertCandle+1])  {
-      AlertText = Symbol() + "," + TFToStr(Period()) + ": L1 :" + AlertTextCrossDown + ". \rPrice = " + DoubleToStr(Bid, 5) + ", L2 = " + DoubleToStr(L2, 5) ;
+      AlertText = Symbol() + "," + TFToStr(Period()) + ": L2 :" + AlertTextCrossDown + ". \rPrice = " + DoubleToStr(Bid, 5) + ", L2 = " + DoubleToStr(L2, 5) ;
       if (ShowChartAlerts)          Alert(AlertText); 
       if (AlertEmailSubject > "")   SendMail(AlertEmailSubject,AlertText);
       if(SendNotifications) SendNotification(AlertText);
