@@ -29,7 +29,7 @@ int counter                             = 0;
 
 int init()    {
    AlertEmailSubject = Symbol() + " volatility alert"; 
-   GlobalVariableSet(StringConcatenate(Symbol(), "_volatility"), 0);
+   GlobalVariableSet(StringConcatenate(Symbol(), "_trendline"), 0);
 
    SetIndexBuffer(1,Low1Buffer);
    SetIndexBuffer(0,High1Buffer);
@@ -42,11 +42,11 @@ int init()    {
    return(0);
   }
 int deinit()    {
-   GlobalVariableDel(StringConcatenate(Symbol(), "_volatility"));
+   GlobalVariableDel(StringConcatenate(Symbol(), "_trendline"));
    return(0);
    }
 int start()    { 
-  counter = GlobalVariableGet(StringConcatenate(Symbol(), "_volatility"));
+  counter = GlobalVariableGet(StringConcatenate(Symbol(), "_trendline"));
   if ( counter < 1 ) {
      int i,                             // indeksy
         Counted_bars;         // Number of counted bars
@@ -68,10 +68,10 @@ int start()    {
       i--; 
     } // while
     counter = 100;
-    GlobalVariableSet(StringConcatenate(Symbol(), "_volatility"), counter);
+    GlobalVariableSet(StringConcatenate(Symbol(), "_trendline"), counter);
   } else { // iddle for N ticks
       counter--;
-      GlobalVariableSet(StringConcatenate(Symbol(), "_volatility"), counter);
+      GlobalVariableSet(StringConcatenate(Symbol(), "_trendline"), counter);
   }
     
    return(0); // exit
