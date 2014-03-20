@@ -21,12 +21,16 @@ double High1Buffer[];
 
 //---- alerts
 extern int     AlertCandle              = 0;      // 1 - last fully formed candle, 0 - current forming candle
+extern int     MaxCounter       = 100;
 datetime       LastAlertTime         = -999999;
 string         AlertTextCrossUp       = " cross UP";
 string         AlertTextCrossDown  = " cross DOWN";
+int counter                             = 0;
 
-int init()
-  {
+int init()    {
+   AlertEmailSubject = Symbol() + " volatility alert"; 
+   GlobalVariableSet(StringConcatenate(Symbol(), "_volatility"), 0);
+
    SetIndexBuffer(1,Low1Buffer);
    SetIndexBuffer(0,High1Buffer);
 
@@ -37,28 +41,38 @@ int init()
    SetIndexDrawBegin(0,0);
    return(0);
   }
-
+int deinit()    {
+   GlobalVariableDel(StringConcatenate(Symbol(), "_volatility"));
+   return(0);
+   }
 int start()    { 
-   int i,                             // indeksy
-      Counted_bars;         // Number of counted bars
-   
-   Counted_bars = IndicatorCounted();  // Number of counted bars
-   i = Bars-Counted_bars-1;                   // Index of the first uncounted
-   int max1 = FindPeak();
-   int max2 = Find2Peak(max1);
-   int min1 = FindValley();
-   int min2 = Find2Peak(min1);
-   double deltaYh = (High[max1]-High[max2]) / (max1 - max2);    // delta Y High
-   double deltaYl = (Low[min1]-Low[min2]) / (min1 - min2);          // delta Y Low
+  counter = GlobalVariableGet(StringConcatenate(Symbol(), "_volatility"));
+  if ( counter < 1 ) {
+     int i,                             // indeksy
+        Counted_bars;         // Number of counted bars
+     
+     Counted_bars = IndicatorCounted();  // Number of counted bars
+     i = Bars-Counted_bars-1;                   // Index of the first uncounted
+     int max1 = FindPeak();
+     int max2 = Find2Peak(max1);
+     int min1 = FindValley();
+     int min2 = Find2Valley(min1);
+     double deltaYh = (High[max1]-High[max2]) / (max1 - max2);    // delta Y High
+     double deltaYl = (Low[min2]-Low[min1]) / (min1 - min2);          // delta Y Low
 
- while(i>=0)    {                                      // Loop for uncounted bars  
-    if(i <= rangeX) {
-      High1Buffer[i] = High[max1] - (max1 - i) * deltaYh;
-      Low1Buffer[i] = Low[min1] + (min1 - i) * deltaYh;
-    }
-    i--; 
-  } // while
-
+   while(i>=0)    {                                      // Loop for uncounted bars  
+      if(i <= rangeX) {
+        High1Buffer[i]  = High[max1] - (max1 - i) * deltaYh;
+        Low1Buffer[i]   = Low[min1] + (min1 - i) * deltaYl;
+      }
+      i--; 
+    } // while
+    counter = 100;
+    GlobalVariableSet(StringConcatenate(Symbol(), "_volatility"), counter);
+  } else { // iddle for N ticks
+      counter--;
+      GlobalVariableSet(StringConcatenate(Symbol(), "_volatility"), counter);
+  }
     
    return(0); // exit
 }
@@ -71,9 +85,10 @@ int maxA = rangeX;
   for (int k = rangeX; k > 0 ; k--) {
     if(High[k] > maxY) {
       maxA = k;
-      maxY = High[maxA];
+      maxY = High[k];
     }
    }
+// Print("FindPeak "+maxA);
  return (maxA);
 }
 
@@ -81,13 +96,16 @@ int Find2Peak(int maxB) { // starts looking half-way (FindPeak()/2) from previou
 
 double maxY = High[1];
 int maxA = 1;
+int K = (int) MathRound(maxB/2) + 1;
 
-  for (int k = MathRound(maxB/2); k > 0 ; k--) {
+  for (int k = 1; k < K; k++) {
+// Print("maxY "+maxY+" High[k] "+High[k]);
     if(High[k] > maxY) {
       maxA = k;
-      maxY = High[maxA];
+      maxY = High[k];
     }
    }
+// Print("Find2Peak "+maxA);
  return (maxA);
 }
 
@@ -97,11 +115,13 @@ double minY = Low[rangeX];
 int minA = rangeX;
 
   for (int k = rangeX; k > 0 ; k--) {
+// Print("minY "+minY+" Low[k]" +Low[k]);
     if(Low[k] < minY) {
       minA = k;
-      minY = Low[minA];
+      minY = Low[k];
     }
    }
+// Print("FindValley " + minA);
  return (minA);
 }
 
@@ -109,12 +129,15 @@ int Find2Valley(int minB) { // starts looking half-way (FindPeak()/2) from previ
 
 double minY = Low[1];
 int minA = 1;
+int K = (int) MathRound(minB/2) + 1;
 
-  for (int k = MathRound(minB/2); k > 0 ; k--) {
+  for (int k = 1; k < K; k++) {
+//Print("minY "+minY+" Low[k]" +Low[k]);
     if(Low[k] < minY) {
       minA = k;
-      minY = Low[minA];
+      minY = Low[k];
     }
    }
+ //Print("Find2Valley " + minA);
  return (minA);
 }

@@ -14,18 +14,32 @@
 //---- buffers
 
 //---- alerts
-extern int     AlertCandle       = 0;      // 1 - last fully formed candle, 0 - current forming candle
-extern int     lookBackRange = 3;
-datetime      LastAlertTime  = -999999;
+extern int     AlertCandle        = 0;      // 1 - last fully formed candle, 0 - current forming candle
+extern int     lookBackRange  = 3;
+extern int     MaxCounter       = 100;
+datetime      LastAlertTime    = -999999;
+int counter                             = 0;
 
-int init()
-  {
+int init()    {
    AlertEmailSubject = Symbol() + " volatility alert"; 
+   GlobalVariableSet(StringConcatenate(Symbol(), "_volatility"), 0);
    return(0);
   }
-
+int deinit()    {
+   GlobalVariableDel(StringConcatenate(Symbol(), "_volatility"));
+   return(0);
+   }
 int start()    { 
-   ProcessAlerts(); 
+  counter = GlobalVariableGet(StringConcatenate(Symbol(), "_volatility"));
+  if ( counter < 1 ) {
+      ProcessAlerts(); 
+      counter = 100;
+      GlobalVariableSet(StringConcatenate(Symbol(), "_volatility"), counter);
+  } else { // iddle for N ticks
+      counter--;
+      GlobalVariableSet(StringConcatenate(Symbol(), "_volatility"), counter);
+  }
+   
    return(0); 
 }
 
