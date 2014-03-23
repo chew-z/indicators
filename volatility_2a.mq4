@@ -33,7 +33,7 @@ int start()    {
   counter = GlobalVariableGet(StringConcatenate(Symbol(), "_volatility"));
   if ( counter < 1 ) {
       ProcessAlerts(); 
-      counter = 100;
+      counter = MaxCounter;
       GlobalVariableSet(StringConcatenate(Symbol(), "_volatility"), counter);
   } else { // iddle for N ticks
       counter--;
@@ -42,7 +42,6 @@ int start()    {
    
    return(0); 
 }
-
 
 int ProcessAlerts()   {                                                                                                                         //
 string AlertText =  "";
