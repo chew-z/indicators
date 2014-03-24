@@ -61,14 +61,14 @@ int start()    {
         }
         i--; 
       } // while
+    ProcessAlerts();
     counter = MaxCounter;
     GlobalVariableSet(StringConcatenate(Symbol(), "_trendline"), counter);
   } else { // iddle for N ticks
       counter--;
       GlobalVariableSet(StringConcatenate(Symbol(), "_trendline"), counter);
-  }
-   ProcessAlerts(); 
-   return(0); // exit
+  } 
+  return(0); // exit
 }
 
 int ProcessAlerts()   {                                                                                                                         //

@@ -64,13 +64,14 @@ int start()    {
          Low2Buffer[i] = L2;
          i--; 
       } // while
+      ProcessAlerts();
       counter = MaxCounter;
       GlobalVariableSet(StringConcatenate(Symbol(), "_levels"), counter);
   } else { // iddle for N ticks
       counter--;
       GlobalVariableSet(StringConcatenate(Symbol(), "_levels"), counter);
   }
-   ProcessAlerts(); 
+    
    return(0); // exit
 }
 

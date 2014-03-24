@@ -81,13 +81,13 @@ int start()    {
        MABuffer[i] = MA;
        i--; 
     } // while
+    ProcessAlerts();
     counter = MaxCounter;
     GlobalVariableSet(StringConcatenate(Symbol(), "_lookback"), counter);
   } else { // iddle for N ticks
       counter--;
       GlobalVariableSet(StringConcatenate(Symbol(), "_lookback"), counter);
   }
-   ProcessAlerts(); 
    return(0); // exit
 }
 

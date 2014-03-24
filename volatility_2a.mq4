@@ -15,7 +15,7 @@
 
 //---- alerts
 extern int     AlertCandle        = 0;      // 1 - last fully formed candle, 0 - current forming candle
-extern int     lookBackRange  = 3;
+extern int     lookBackRange  = 5;
 datetime      LastAlertTime    = -999999;
 
 int init()    {
@@ -30,13 +30,13 @@ int deinit()    {
 int start()    { 
   counter = GlobalVariableGet(StringConcatenate(Symbol(), "_volatility"));
   if ( counter < 1 ) {
+      ProcessAlerts();
       counter = MaxCounter;
       GlobalVariableSet(StringConcatenate(Symbol(), "_volatility"), counter);
   } else { // iddle for N ticks
       counter--;
       GlobalVariableSet(StringConcatenate(Symbol(), "_volatility"), counter);
   }
-   ProcessAlerts();   
    return(0); 
 }
 
