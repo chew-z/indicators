@@ -11,21 +11,15 @@
 #property indicator_buffers 2
 #property indicator_color1 Red      // Color of the High trendline 
 #property indicator_color2 Green   // Color of the High trendline 
-
 //---- indicator parameters
-extern int rangeX = 50;
-
 //---- buffers
 double Low1Buffer[];
 double High1Buffer[];
-
 //---- alerts
 extern int     AlertCandle              = 0;      // 1 - last fully formed candle, 0 - current forming candle
-extern int     MaxCounter       = 100;
 datetime       LastAlertTime         = -999999;
 string         AlertTextCrossUp       = " cross UP";
 string         AlertTextCrossDown  = " cross DOWN";
-int counter                             = 0;
 
 int init()    {
    AlertEmailSubject = Symbol() + " trendline alert"; 
@@ -67,14 +61,13 @@ int start()    {
         }
         i--; 
       } // while
-    ProcessAlerts(); 
     counter = MaxCounter;
     GlobalVariableSet(StringConcatenate(Symbol(), "_trendline"), counter);
   } else { // iddle for N ticks
       counter--;
       GlobalVariableSet(StringConcatenate(Symbol(), "_trendline"), counter);
   }
-    
+   ProcessAlerts(); 
    return(0); // exit
 }
 
@@ -116,68 +109,3 @@ L = Low1Buffer[AlertCandle];
   }                                                                                                           
   return(0);                                                                                                  
 }                          
-
-int FindPeak() { // starts looking rangeX (extern variable) bars from 0
-
-double maxY = High[rangeX];
-int maxA = rangeX;
-
-  for (int k = rangeX; k > 0 ; k--) {
-    if(High[k] > maxY) {
-      maxA = k;
-      maxY = High[k];
-    }
-   }
-// Print("FindPeak "+maxA);
- return (maxA);
-}
-
-int Find2Peak(int maxB) { 
-
-int K = (int) MathRound(maxB/2) + 1; // starts looking half-way (FindPeak()/2) from previous peak [only lower peaks]
-double maxY = High[1];
-int maxA = 1;
-
-  for (int k = 1; k < K; k++) {
-// Print("maxY "+maxY+" High[k] "+High[k]);
-    if(High[k] > maxY) {
-      maxA = k;
-      maxY = High[k];
-    }
-   }
-// Print("Find2Peak "+maxA);
- return (maxA);
-}
-
-int FindValley() { // starts looking rangeX (extern variable) bars from 0
-
-double minY = Low[rangeX];
-int minA = rangeX;
-
-  for (int k = rangeX; k > 0 ; k--) {
-// Print("minY "+minY+" Low[k]" +Low[k]);
-    if(Low[k] < minY) {
-      minA = k;
-      minY = Low[k];
-    }
-   }
-// Print("FindValley " + minA);
- return (minA);
-}
-
-int Find2Valley(int minB) { 
-
-int K = (int) MathRound(minB/2) + 1;  // starts looking half-way (FindPeak()/2) from previous peak [only lower peaks]
-double minY = Low[1];
-int minA = 1;
-
-  for (int k = 1; k < K; k++) {
-//Print("minY "+minY+" Low[k]" +Low[k]);
-    if(Low[k] < minY) {
-      minA = k;
-      minY = Low[k];
-    }
-   }
- //Print("Find2Valley " + minA);
- return (minA);
-}

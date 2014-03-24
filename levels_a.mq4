@@ -24,14 +24,14 @@ double High1Buffer[];
 double Low1Buffer[];
 double Low2Buffer[];
 //---- alerts
-extern int     AlertCandle         = 0;      // 1 - last fully formed candle, 0 - current forming candle
-extern bool    ShowChartAlerts     = true;   // Show allerts in MQL 
-datetime       LastAlertTime       = -999999;
-string         AlertTextCrossUp    = " cross UP";
+extern int     AlertCandle              = 0;      // 1 - last fully formed candle, 0 - current forming candle
+datetime       LastAlertTime         = -999999;
+string         AlertTextCrossUp       = " cross UP";
 string         AlertTextCrossDown  = " cross DOWN";
 
-int init()
-  {
+int init()  {
+   AlertEmailSubject = Symbol() + " levels alert";
+   GlobalVariableSet(StringConcatenate(Symbol(), "levels"), 0);
    SetIndexBuffer(3,High2Buffer);
    SetIndexBuffer(2,High1Buffer);
    SetIndexBuffer(1,Low1Buffer); 
@@ -46,20 +46,30 @@ int init()
    SetIndexDrawBegin(0,0);
    return(0);
   }
-
+int deinit()    {
+   GlobalVariableDel(StringConcatenate(Symbol(), "levels"));
+   return(0);
+   }
 int start()    { 
-   int i,                       // indeksy
-       Counted_bars;            // Number of counted bars
-   
-   Counted_bars = IndicatorCounted();  // Number of counted bars
-   i = Bars-Counted_bars-1;            // Index of the first uncounted
-while(i>=0)    {                  // Loop for uncounted bars
-   High2Buffer[i] = H2;
-   High1Buffer[i] = H1;
-   Low1Buffer[i] = L1;
-   Low2Buffer[i] = L2;
-   i--; 
-} // while
+  counter = GlobalVariableGet(StringConcatenate(Symbol(), "_levels"));
+  if ( counter < 1 ) {
+      int i,                       // indeksy
+      Counted_bars;       // Number of counted bars
+      Counted_bars = IndicatorCounted();  // Number of counted bars
+      i = Bars-Counted_bars-1;            // Index of the first uncounted
+      while(i>=0)    {                  // Loop for uncounted bars
+         High2Buffer[i] = H2;
+         High1Buffer[i] = H1;
+         Low1Buffer[i] = L1;
+         Low2Buffer[i] = L2;
+         i--; 
+      } // while
+      counter = MaxCounter;
+      GlobalVariableSet(StringConcatenate(Symbol(), "_levels"), counter);
+  } else { // iddle for N ticks
+      counter--;
+      GlobalVariableSet(StringConcatenate(Symbol(), "_levels"), counter);
+  }
    ProcessAlerts(); 
    return(0); // exit
 }
@@ -71,7 +81,6 @@ string AlertText = "";
     // === Alert processing for crossover UP (indicator line crosses ABOVE signal line) 
     if (Close[AlertCandle] > High2Buffer[AlertCandle]  &&  Close[AlertCandle+1] <= High2Buffer[AlertCandle+1])  { 
       AlertText = Symbol() + "," + TFToStr(Period()) + ": H2 :" + AlertTextCrossUp + ". \rPrice = " + DoubleToStr(Ask, 5) + ", H2 = " + DoubleToStr(H2, 5) ;
-      if (ShowChartAlerts)          Alert(AlertText);
       if (AlertEmailSubject > "")   SendMail(AlertEmailSubject,AlertText);
       if(SendNotifications) SendNotification(AlertText);
       LastAlertTime = Time[0];
@@ -79,14 +88,12 @@ string AlertText = "";
     // === Alert processing for crossover DOWN (indicator line crosses BELOW signal line) 
    if (Close[AlertCandle] < High2Buffer[AlertCandle]  && Close[AlertCandle+1] >= High2Buffer[AlertCandle+1])  {
       AlertText = Symbol() + "," + TFToStr(Period()) + ": H2 :" + AlertTextCrossDown + ". \rPrice = " + DoubleToStr(Ask, 5) + ", H2 = " + DoubleToStr(H2, 5) ;
-      if (ShowChartAlerts)          Alert(AlertText); 
       if (AlertEmailSubject > "")   SendMail(AlertEmailSubject,AlertText);
       if(SendNotifications) SendNotification(AlertText);
       LastAlertTime = Time[0];
     }
    if (Close[AlertCandle] > High1Buffer[AlertCandle]  &&  Close[AlertCandle+1] <= High1Buffer[AlertCandle+1])  { 
       AlertText = Symbol() + "," + TFToStr(Period()) + ": H1 :" + AlertTextCrossUp + ". \rPrice = " + DoubleToStr(Ask, 5) + ", H1 = " + DoubleToStr(H1, 5) ;
-      if (ShowChartAlerts)          Alert(AlertText);
       if (AlertEmailSubject > "")   SendMail(AlertEmailSubject,AlertText);
       if(SendNotifications) SendNotification(AlertText);
       LastAlertTime = Time[0];
@@ -94,7 +101,6 @@ string AlertText = "";
     // === Alert processing for crossover DOWN (indicator line crosses BELOW signal line) 
     if (Close[AlertCandle] < High1Buffer[AlertCandle]  && Close[AlertCandle+1] >= High1Buffer[AlertCandle+1])  {
       AlertText = Symbol() + "," + TFToStr(Period()) + ": H1 :" + AlertTextCrossDown + ". \rPrice = " + DoubleToStr(Ask, 5) + ", H1 = " + DoubleToStr(H1, 5) ;
-      if (ShowChartAlerts)          Alert(AlertText); 
       if (AlertEmailSubject > "")   SendMail(AlertEmailSubject,AlertText);
       if(SendNotifications) SendNotification(AlertText);
       LastAlertTime = Time[0];
@@ -103,15 +109,13 @@ string AlertText = "";
     // === Alert processing for crossover UP (indicator line crosses ABOVE signal line)
     if (Close[AlertCandle] > Low1Buffer[AlertCandle]  &&  Close[AlertCandle+1] <= Low1Buffer[AlertCandle+1])  { 
       AlertText = Symbol() + "," + TFToStr(Period()) + ": L1 :" + AlertTextCrossUp + ". \rPrice = " + DoubleToStr(Bid, 5) + ", L1 = " + DoubleToStr(L1, 5) ;
-      if (ShowChartAlerts)          Alert(AlertText);
       if (AlertEmailSubject > "")   SendMail(AlertEmailSubject,AlertText);
       if(SendNotifications) SendNotification(AlertText);
       LastAlertTime = Time[0];
     }                                                                                                                                          
     // === Alert processing for crossover DOWN (indicator line crosses BELOW signal line) 
     if (Close[AlertCandle] < Low1Buffer[AlertCandle]  && Close[AlertCandle+1] >= Low1Buffer[AlertCandle+1])  {
-      AlertText = Symbol() + "," + TFToStr(Period()) + ": L1 :" + AlertTextCrossDown + ". \rPrice = " + DoubleToStr(Bid, 5) + ", L1 = " + DoubleToStr(L1, 5) ;
-      if (ShowChartAlerts)          Alert(AlertText); 
+      AlertText = Symbol() + "," + TFToStr(Period()) + ": L1 :" + AlertTextCrossDown + ". \rPrice = " + DoubleToStr(Bid, 5) + ", L1 = " + DoubleToStr(L1, 5) ; 
       if (AlertEmailSubject > "")   SendMail(AlertEmailSubject,AlertText);
       if(SendNotifications) SendNotification(AlertText);
       LastAlertTime = Time[0];                                                                                
@@ -119,15 +123,13 @@ string AlertText = "";
    // === Alert processing for crossover UP (indicator line crosses ABOVE signal line)
    if (Close[AlertCandle] > Low2Buffer[AlertCandle]  &&  Close[AlertCandle+1] <= Low2Buffer[AlertCandle+1])  { 
       AlertText = Symbol() + "," + TFToStr(Period()) + ": L2 :" + AlertTextCrossUp + ". \rPrice = " + DoubleToStr(Bid, 5) + ", L2 = " + DoubleToStr(L2, 5) ;
-      if (ShowChartAlerts)          Alert(AlertText);
       if (AlertEmailSubject > "")   SendMail(AlertEmailSubject,AlertText);
       if(SendNotifications) SendNotification(AlertText);
       LastAlertTime = Time[0];
     }                                                                                                                                          
     // === Alert processing for crossover DOWN (indicator line crosses BELOW signal line) 
     if (Close[AlertCandle] < Low2Buffer[AlertCandle]  && Close[AlertCandle+1] >= Low2Buffer[AlertCandle+1])  {
-      AlertText = Symbol() + "," + TFToStr(Period()) + ": L2 :" + AlertTextCrossDown + ". \rPrice = " + DoubleToStr(Bid, 5) + ", L2 = " + DoubleToStr(L2, 5) ;
-      if (ShowChartAlerts)          Alert(AlertText); 
+      AlertText = Symbol() + "," + TFToStr(Period()) + ": L2 :" + AlertTextCrossDown + ". \rPrice = " + DoubleToStr(Bid, 5) + ", L2 = " + DoubleToStr(L2, 5) ; 
       if (AlertEmailSubject > "")   SendMail(AlertEmailSubject,AlertText);
       if(SendNotifications) SendNotification(AlertText);
       LastAlertTime = Time[0];                                                                                
