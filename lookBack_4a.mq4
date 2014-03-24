@@ -3,7 +3,7 @@
 //| rysuje linie dziennego Hi/Lo dla ka¿dej timeframe                |
 //| badany zakres jest funkcj¹ pochodnej zmiennoœci                  |
 //+------------------------------------------------------------------+
-#property copyright "Copyright © 2011, chew-z"
+#property copyright "Copyright © 2011, 2014 chew-z"
 #property link      "LookBack 4 - roœnie zmiennoœæ, skracaj okres"
 #include <TradeTools.mqh>
 #include <TradeContext.mq4>
@@ -33,7 +33,7 @@ double MA;
 
 int init()  {
    AlertEmailSubject = Symbol() + " lookback alert";
-   GlobalVariableSet(StringConcatenate(Symbol(), "lookback"), 0);
+   GlobalVariableSet(StringConcatenate(Symbol(), "_lookback"), 0);
    SetIndexBuffer(2,MABuffer);
    SetIndexBuffer(1,LowBuffer); 
    SetIndexBuffer(0,HighBuffer);
@@ -46,12 +46,10 @@ int init()  {
    return(0);
   }
 int deinit()    {
-   GlobalVariableDel(StringConcatenate(Symbol(), "lookback"));
+   GlobalVariableDel(StringConcatenate(Symbol(), "_lookback"));
    return(0);
    }
 int start()    { 
-  counter = GlobalVariableGet(StringConcatenate(Symbol(), "_lookback"));
-  if ( counter < 1 ) {
      int i,                       // indeksy
          Counted_bars;            // Number of counted bars
      Counted_bars = IndicatorCounted();  // Number of counted bars
@@ -82,12 +80,6 @@ int start()    {
        i--; 
     } // while
     ProcessAlerts();
-    counter = MaxCounter;
-    GlobalVariableSet(StringConcatenate(Symbol(), "_lookback"), counter);
-  } else { // iddle for N ticks
-      counter--;
-      GlobalVariableSet(StringConcatenate(Symbol(), "_lookback"), counter);
-  }
    return(0); // exit
 }
 

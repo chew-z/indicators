@@ -18,8 +18,8 @@ double High1Buffer[];
 //---- alerts
 extern int     AlertCandle              = 0;      // 1 - last fully formed candle, 0 - current forming candle
 datetime       LastAlertTime         = -999999;
-string         AlertTextCrossUp       = " cross UP";
-string         AlertTextCrossDown  = " cross DOWN";
+string         AlertTextCrossUp       = " trendline cross UP";
+string         AlertTextCrossDown  = " trendline cross DOWN";
 
 int init()    {
    AlertEmailSubject = Symbol() + " trendline alert"; 
@@ -40,11 +40,8 @@ int deinit()    {
    return(0);
    }
 int start()    { 
-  counter = GlobalVariableGet(StringConcatenate(Symbol(), "_trendline"));
-  if ( counter < 1 ) {
      int i,                             // indeksy
-        Counted_bars;         // Number of counted bars
-     
+        Counted_bars;         // Number of counted bars     
      Counted_bars = IndicatorCounted();  // Number of counted bars
      i = Bars-Counted_bars-1;                   // Index of the first uncounted
      int max1 = FindPeak();
@@ -62,12 +59,6 @@ int start()    {
         i--; 
       } // while
     ProcessAlerts();
-    counter = MaxCounter;
-    GlobalVariableSet(StringConcatenate(Symbol(), "_trendline"), counter);
-  } else { // iddle for N ticks
-      counter--;
-      GlobalVariableSet(StringConcatenate(Symbol(), "_trendline"), counter);
-  } 
   return(0); // exit
 }
 

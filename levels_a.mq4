@@ -31,7 +31,7 @@ string         AlertTextCrossDown  = " cross DOWN";
 
 int init()  {
    AlertEmailSubject = Symbol() + " levels alert";
-   GlobalVariableSet(StringConcatenate(Symbol(), "levels"), 0);
+   GlobalVariableSet(StringConcatenate(Symbol(), "_levels"), 0);
    SetIndexBuffer(3,High2Buffer);
    SetIndexBuffer(2,High1Buffer);
    SetIndexBuffer(1,Low1Buffer); 
@@ -47,32 +47,23 @@ int init()  {
    return(0);
   }
 int deinit()    {
-   GlobalVariableDel(StringConcatenate(Symbol(), "levels"));
+   GlobalVariableDel(StringConcatenate(Symbol(), "_levels"));
    return(0);
    }
 int start()    { 
-  counter = GlobalVariableGet(StringConcatenate(Symbol(), "_levels"));
-  if ( counter < 1 ) {
-      int i,                       // indeksy
-      Counted_bars;       // Number of counted bars
-      Counted_bars = IndicatorCounted();  // Number of counted bars
-      i = Bars-Counted_bars-1;            // Index of the first uncounted
-      while(i>=0)    {                  // Loop for uncounted bars
-         High2Buffer[i] = H2;
-         High1Buffer[i] = H1;
-         Low1Buffer[i] = L1;
-         Low2Buffer[i] = L2;
-         i--; 
-      } // while
-      ProcessAlerts();
-      counter = MaxCounter;
-      GlobalVariableSet(StringConcatenate(Symbol(), "_levels"), counter);
-  } else { // iddle for N ticks
-      counter--;
-      GlobalVariableSet(StringConcatenate(Symbol(), "_levels"), counter);
-  }
-    
-   return(0); // exit
+  int i,                       // indeksy
+  Counted_bars;       // Number of counted bars
+  Counted_bars = IndicatorCounted();  // Number of counted bars
+  i = Bars-Counted_bars-1;            // Index of the first uncounted
+  while(i>=0)    {                  // Loop for uncounted bars
+     High2Buffer[i] = H2;
+     High1Buffer[i] = H1;
+     Low1Buffer[i] = L1;
+     Low2Buffer[i] = L2;
+     i--; 
+  } // while
+  ProcessAlerts();
+  return(0); // exit
 }
 
 int ProcessAlerts()   {                                                                                                                         //

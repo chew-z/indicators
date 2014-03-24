@@ -3,7 +3,7 @@
 //| rysuje linie dziennego Hi/Lo dla ka¿dej timeframe                |
 //| badany zakres jest funkcj¹ pochodnej zmiennoœci                  |
 //+------------------------------------------------------------------+
-#property copyright "Copyright © 2011, chew-z"
+#property copyright "Copyright © 2011, 2014 chew-z"
 #property link      "LookBack 4 - roœnie zmiennoœæ, skracaj okres"
 
 #property indicator_chart_window
