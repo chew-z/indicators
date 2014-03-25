@@ -52,6 +52,7 @@ int start()    {
      double deltaYh = (High[max1]-High[max2]) / (max1 - max2);    // delta Y High
      double deltaYl = (Low[min2]-Low[min1]) / (min1 - min2);          // delta Y Low
      // Print the dates of peaks and valleys on chart
+     Comment("Max1 "+TimeToStr(Time[max1], TIME_DATE)+" Max2 "+TimeToStr(Time[max2], TIME_DATE)+" Min1 "+TimeToStr(Time[min1], TIME_DATE)+" Min2 "+TimeToStr(Time[min2], TIME_DATE));
      while(i>=0)    {                                      // Loop for uncounted bars  
         if(i <= rangeX) {
           High1Buffer[i]  = High[max1] - (max1 - i) * deltaYh;
