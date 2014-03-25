@@ -28,6 +28,8 @@ int deinit()    {
    return(0);
    }
 int start()    { 
+    if (NewDay()) 
+      GlobalVariableSet(StringConcatenate(Symbol(), "_volatility"), 0);
     ProcessAlerts();
     return(0); 
 }
@@ -36,25 +38,26 @@ int ProcessAlerts()   {                                                         
 string AlertText =  "";
 H = iHigh(NULL, PERIOD_D1, iHighest(NULL,PERIOD_D1,MODE_HIGH,lookBackRange,1)); // kurwa magic ale chyba dzia³a
 L = iLow (NULL, PERIOD_D1, iLowest (NULL,PERIOD_D1,MODE_LOW,lookBackRange,1));
-   
-   if (AlertCandle >= 0  &&  Time[0] > LastAlertTime)   { // Time[0] = Open time. So one alert per new bar
-    if( Low[AlertCandle] < iLow(NULL, PERIOD_D1, 1) || High[AlertCandle] > iHigh(NULL, PERIOD_D1, 1) )  {
+int semafor = GlobalVariableGet(StringConcatenate(Symbol(), "_volatility"));
+   if (semafor < 7)   { //  7 = 1 + 2 + 4 = all flags set
+
+    if(MathMod(semafor, 2) < 1 && (Low[AlertCandle] < iLow(NULL, PERIOD_D1, 1) || High[AlertCandle] > iHigh(NULL, PERIOD_D1, 1)) )  {
       AlertText = Symbol() + "," + TFToStr(Period()) + ": Price action outside yesterday's range. \rPrice = " + DoubleToStr(Bid, 5);
       if (AlertEmailSubject > "")   SendMail(AlertEmailSubject,AlertText);
       if(SendNotifications) SendNotification(AlertText);
-      LastAlertTime = Time[0];
+      GlobalVariableSet(StringConcatenate(Symbol(), "_volatility"), semafor+1);
     }
-    if( iHigh(NULL, PERIOD_D1, AlertCandle) - iLow(NULL, PERIOD_D1, AlertCandle) >  iATR(NULL,PERIOD_D1,3,1) )  {
+    if(MathMod(semafor, 4) < 2 && iHigh(NULL, PERIOD_D1, AlertCandle) - iLow(NULL, PERIOD_D1, AlertCandle) >  iATR(NULL,PERIOD_D1,3,1) )  {
       AlertText = Symbol() + "," + TFToStr(Period()) + ": Price action outside 3-days ATR. \rPrice = " + DoubleToStr(Bid, 5);
       if (AlertEmailSubject > "")   SendMail(AlertEmailSubject,AlertText);
       if(SendNotifications) SendNotification(AlertText);
-      LastAlertTime = Time[0];
+      GlobalVariableSet(StringConcatenate(Symbol(), "_volatility"), semafor+2);
     }
-    if( Low[AlertCandle] < L || High[AlertCandle] > H)  {
+    if(semafor < 4  && (Low[AlertCandle] < L || High[AlertCandle] > H) )  {
       AlertText = Symbol() + "," + TFToStr(Period()) + ": Price action outside last days range. \rPrice = " + DoubleToStr(Bid, 5);
       if (AlertEmailSubject > "")   SendMail(AlertEmailSubject,AlertText);
       if(SendNotifications) SendNotification(AlertText);
-      LastAlertTime = Time[0];
+      GlobalVariableSet(StringConcatenate(Symbol(), "_volatility"), semafor+4);
     }
     
    }
