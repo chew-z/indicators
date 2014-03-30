@@ -38,7 +38,7 @@ int ProcessAlerts()   {                                                         
 string AlertText =  "";
 H = iHigh(NULL, PERIOD_D1, iHighest(NULL,PERIOD_D1,MODE_HIGH,lookBackRange,1)); // kurwa magic ale chyba dzia³a
 L = iLow (NULL, PERIOD_D1, iLowest (NULL,PERIOD_D1,MODE_LOW,lookBackRange,1));
-int semafor = GlobalVariableGet(StringConcatenate(Symbol(), "_volatility"));
+int semafor = GlobalVariableGet(StringConcatenate(Symbol(), "_volatility")); // czasem [jednoczesny sygnał] powtarza jeden
    if (semafor < 7)   { //  7 = 1 + 2 + 4 = all flags set
 
     if(MathMod(semafor, 2) < 1 && (Low[AlertCandle] < iLow(NULL, PERIOD_D1, 1) || High[AlertCandle] > iHigh(NULL, PERIOD_D1, 1)) )  {
