@@ -20,6 +20,7 @@ double N1Buffer[];
 //---- alerts
 extern int     AlertCandle              = 0;      // 1 - last fully formed candle, 0 - current forming candle
 datetime       LastAlertTime         = -999999;
+datetime       LastRedrawTime     = -999999;
 string         AlertTextCrossUp       = " trendline cross UP";
 string         AlertTextCrossDown  = " trendline cross DOWN";
 
@@ -67,6 +68,10 @@ int start()    {
         }
         i--; 
       } // while
+      if (Time[0] > LastRedrawTime) { // redraw indicator once in a bartime
+          WindowRedraw(); 
+          LastRedrawTime = Time[0];
+        } 
     ProcessAlerts();
   return(0); // exit
 }
