@@ -46,8 +46,14 @@ int deinit()    {
    return(0);
    }
 int start()    { 
-     int i, half, Counted_bars;          // Number of counted bars     
-     Counted_bars = IndicatorCounted();  // Number of counted bars
+     int i, half, Counted_bars;          // Number of counted bars   
+     if (Time[0] > LastRedrawTime) { // redraw indicator once in a bartime
+          Counted_bars = Bars - rangeX + 1; //tyle bars NIE musimy przelecieć
+          LastRedrawTime = Time[0];
+          Print("trendline_2a - indicator repaint "+TimeToStr(LastRedrawTime, TIME_MINUTES));
+        }  else {
+          Counted_bars = IndicatorCounted();  // Number of counted bars
+        }
      i = Bars-Counted_bars-1;            // Index of the first uncounted
      int max1 = iHighest(NULL, 0, MODE_HIGH, rangeX, 1); //roughly 24 H1 bars per day
          half = MathRound(max1/2) + 1;                // starts looking half-way from previous peak [not only lower peaks]
@@ -68,15 +74,12 @@ int start()    {
         }
         i--; 
       } // while
-      if (Time[0] > LastRedrawTime) { // redraw indicator once in a bartime
-          WindowRedraw(); 
-          LastRedrawTime = Time[0];
-        } 
+ 
     ProcessAlerts();
   return(0); // exit
 }
 
-int ProcessAlerts()   {                                                                                                                         //
+int ProcessAlerts()   { 
 string AlertText = "";
 H = High1Buffer[AlertCandle];
 L = Low1Buffer[AlertCandle];
