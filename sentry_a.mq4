@@ -24,7 +24,6 @@ int init()
 
 int start()    { 
   string AlertText = "Wszystko OK";
-  bool isNewBar;
 
   if (quietHours == true || AlertFlag == true) {
     if(Hour() >= quietStart || Hour()< quietStop )
