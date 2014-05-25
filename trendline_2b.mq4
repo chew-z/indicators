@@ -19,11 +19,10 @@ double High1Buffer[];
 double N1Buffer[];
 //---- alerts
 extern int     AlertCandle              = 0;      // 1 - last fully formed candle, 0 - current forming candle
-extern int blindRange                   = 72;   // ignore recently formed tops/bottoms
-datetime       LastAlertTime         = -999999;
-datetime       LastRedrawTime     = -999999;
-string         AlertTextCrossUp       = " trendline cross UP";
-string         AlertTextCrossDown  = " trendline cross DOWN";
+datetime       LastAlertTime            = -999999;
+datetime       LastRedrawTime           = -999999;
+string         AlertTextCrossUp         = " trendline cross UP";
+string         AlertTextCrossDown       = " trendline cross DOWN";
 
 int init()    {
    AlertEmailSubject = Symbol() + " trendline alert"; 
@@ -67,7 +66,7 @@ int start()    {
      double deltaYl = (Low[min2]-Low[min1]) / (min1 - min2);          // delta Y Low
      // Print the dates of peaks and valleys on chart
      Comment("Max1 "+DoubleToStr(High[max1],4)+" "+TimeToStr(Time[max1], TIME_DATE)+" Max2 "+DoubleToStr(High[max2],4)+" "+TimeToStr(Time[max2], TIME_DATE)+
-             " Min1 "+DoubleToStr(Low[min1],4)+" "+TimeToStr(Time[min1], TIME_DATE)+" Min2 "+DoubleToStr(Low[min2],4)+" "+TimeToStr(Time[min2], TIME_DATE));
+             "\nMin1 "+DoubleToStr(Low[min1],4)+" "+TimeToStr(Time[min1], TIME_DATE)+" Min2 "+DoubleToStr(Low[min2],4)+" "+TimeToStr(Time[min2], TIME_DATE));
      while(i>=0)    {                                      // Loop for uncounted bars  
         if(i <= rangeX) {
           High1Buffer[i]  = High[max1] - (max1 - i) * deltaYh;
