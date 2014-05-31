@@ -49,7 +49,7 @@ int start()    {
 }
 
 int deinit()     {
-   Comment("");
+   return(0); // exit
 }
 /////////////////////////// SIGNALS ////////////////////////////////////
 bool isTrending_L(int j) { // Czy œrednia szybka powy¿ej wolnej?

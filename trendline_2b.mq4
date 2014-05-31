@@ -26,7 +26,7 @@ string         AlertTextCrossDown       = " trendline cross DOWN";
 
 int init()    {
    AlertEmailSubject = Symbol() + " trendline alert"; 
-   GlobalVariableSet(StringConcatenate(Symbol(), "_trendline_2b"), 0);
+   LastAlertTime = Time[0]; //experimental - supresses series of crazy alerts sent after terminal start
 
    SetIndexBuffer(2,N1Buffer);
    SetIndexBuffer(1,Low1Buffer);
@@ -42,7 +42,6 @@ int init()    {
    return(0);
   }
 int deinit()    {
-   GlobalVariableDel(StringConcatenate(Symbol(), "_trendline_2b"));
    return(0);
    }
 int start()    { 

@@ -33,7 +33,7 @@ double MA;
 
 int init()  {
    AlertEmailSubject = Symbol() + " lookback alert";
-   GlobalVariableSet(StringConcatenate(Symbol(), "_lookback"), 0);
+   LastAlertTime = Time[0]; //experimental - supresses series of crazy alerts sent after terminal start
    SetIndexBuffer(2,MABuffer);
    SetIndexBuffer(1,LowBuffer); 
    SetIndexBuffer(0,HighBuffer);
@@ -46,7 +46,6 @@ int init()  {
    return(0);
   }
 int deinit()    {
-   GlobalVariableDel(StringConcatenate(Symbol(), "_lookback"));
    return(0);
    }
 int start()    { 

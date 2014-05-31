@@ -26,7 +26,7 @@ string         AlertTextCrossDown  = " trendline cross DOWN";
 
 int init()    {
    AlertEmailSubject = Symbol() + " trendline alert"; 
-   GlobalVariableSet(StringConcatenate(Symbol(), "_trendline_2"), 0);
+   LastAlertTime = Time[0]; //experimental - supresses series of crazy alerts sent after terminal start
 
    SetIndexBuffer(2,N1Buffer);
    SetIndexBuffer(1,Low1Buffer);
@@ -42,7 +42,6 @@ int init()    {
    return(0);
   }
 int deinit()    {
-   GlobalVariableDel(StringConcatenate(Symbol(), "_trendline_2"));
    return(0);
    }
 int start()    { 
@@ -65,7 +64,7 @@ int start()    {
      double deltaYl = (Low[min2]-Low[min1]) / (min1 - min2);          // delta Y Low
      // Print the dates of peaks and valleys on chart
      Comment("Max1 "+DoubleToStr(High[max1],4)+" "+TimeToStr(Time[max1], TIME_DATE)+" Max2 "+DoubleToStr(High[max2],4)+" "+TimeToStr(Time[max2], TIME_DATE)+
-             " Min1 "+DoubleToStr(Low[min1],4)+" "+TimeToStr(Time[min1], TIME_DATE)+" Min2 "+DoubleToStr(Low[min2],4)+" "+TimeToStr(Time[min2], TIME_DATE));
+             "\nMin1 "+DoubleToStr(Low[min1],4)+" "+TimeToStr(Time[min1], TIME_DATE)+" Min2 "+DoubleToStr(Low[min2],4)+" "+TimeToStr(Time[min2], TIME_DATE));
      while(i>=0)    {                                      // Loop for uncounted bars  
         if(i <= rangeX) {
           High1Buffer[i]  = High[max1] - (max1 - i) * deltaYh;

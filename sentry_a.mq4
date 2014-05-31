@@ -4,7 +4,7 @@
 //|                                                                  |
 //+------------------------------------------------------------------+
 #property copyright "Copyright © 2013, chew-z"
-#property link      "levels - "
+#property link      "sentry_a"
 
 #property indicator_chart_window
 #property indicator_buffers 0
@@ -13,7 +13,7 @@
 extern bool    quietHours          = true;
 extern int     quietStart          = 22;
 extern int     quietStop           =  6;
-extern int     minute              =  45;
+extern int     minute              =  50;
 bool           AlertFlag           = false;
 
 int init()

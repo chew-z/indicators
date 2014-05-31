@@ -31,7 +31,7 @@ string         AlertTextCrossDown  = " cross DOWN";
 
 int init()  {
    AlertEmailSubject = Symbol() + " levels alert";
-   GlobalVariableSet(StringConcatenate(Symbol(), "_levels"), 0);
+   LastAlertTime = Time[0]; //experimental - supresses series of crazy alerts sent after terminal start
    SetIndexBuffer(3,High2Buffer);
    SetIndexBuffer(2,High1Buffer);
    SetIndexBuffer(1,Low1Buffer); 
@@ -47,7 +47,6 @@ int init()  {
    return(0);
   }
 int deinit()    {
-   GlobalVariableDel(StringConcatenate(Symbol(), "_levels"));
    return(0);
    }
 int start()    { 

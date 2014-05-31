@@ -21,6 +21,7 @@ datetime      LastAlertTime    = -999999;
 int init()    {
    AlertEmailSubject = Symbol() + " volatility alert"; 
    GlobalVariableSet(StringConcatenate(Symbol(), "_volatility"), 0);
+   LastAlertTime = Time[0]; //experimental - supresses series of crazy alerts sent after terminal start
    return(0);
   }
 int deinit()    {
