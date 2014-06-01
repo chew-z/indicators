@@ -32,7 +32,12 @@ void OnDeinit(const int reason){
     Print(__FUNCTION__,"_Uninitalization reason code = ", reason);
     GlobalVariableDel("sentry_2a");
 }
-int start()    { 
+int OnCalculate(
+                const int rates_total,    // number of available bars in history at the current tick
+                const int prev_calculated,// number of bars, calculated at previous tick
+                const int begin,          // index of the first bar
+                const double &price[]     // price array for the calculation 
+                )             { 
   string AlertText = "Wszystko OK";
 
   if (NewDay() )
@@ -45,7 +50,7 @@ int start()    {
 
   if (quietHours == true || AlertFlag == true) {
     if(Hour() >= quietStart || Hour()< quietStop )
-      return(0); // exit
+      return rates_total; // exit
     if(Minute() > minute)
       AlertFlag = false;
   }
@@ -55,6 +60,6 @@ int start()    {
       SendNotification(AlertText);
       AlertFlag = true;
   }
-  return(0); // exit
+  return rates_total; // exit
 }   
  
