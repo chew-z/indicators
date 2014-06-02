@@ -16,12 +16,10 @@
 //---- alerts
 extern int     AlertCandle        = 0;      // 1 - last fully formed candle, 0 - current forming candle
 extern int     lookBackRange  = 5;
-datetime      LastAlertTime    = -999999;
 
 int init()    {
    AlertEmailSubject = Symbol() + " volatility alert"; 
    GlobalVariableSet(StringConcatenate(Symbol(), "_volatility"), 0);
-   LastAlertTime = Time[0]; //experimental - supresses series of crazy alerts sent after terminal start
    return(0);
   }
 int deinit()    {
