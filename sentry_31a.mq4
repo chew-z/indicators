@@ -34,7 +34,8 @@ void OnTimer() {
       AlertFlag = false;
   }
   if (Minute() == minute && AlertFlag == false) {
-      SendNotification("Wszystko OK. PL = " + AccountProfit() + " Marign =" + AccountMargin() );
+      SendNotification("Wszystko OK.\nPL = " + DoubleToString(AccountProfit(), 0)
+        + ". Margin = " + DoubleToString(AccountMargin(), 0) );
       AlertFlag = true;
   }
   return; // exit
