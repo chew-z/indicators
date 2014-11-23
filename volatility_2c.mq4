@@ -1,10 +1,10 @@
 //+------------------------------------------------------------------+
-//|                                                   volatility_2a.mq4    |
-//| wysyła alerty związne ze zmiennością                     |
+//|                                             volatility_2c.mq4    |
+//| wysyła alerty związne ze zmiennością                             |
 //| (ATR, dzienny zakres etc.)                                       |
 //+------------------------------------------------------------------+
 #property copyright "Copyright © 2014, chew-z"
-#property link      "volatility_2b"
+#property link      "volatility_2c"
 #include <TradeTools\TradeTools5.mqh>
 #include <TradeContext.mq4>
 #property indicator_chart_window
@@ -14,7 +14,7 @@
 //---- buffers
 
 //---- alerts
-input int     AlertCandle        = 0;      // 1 - last fully formed candle, 0 - current forming candle
+input int     AlertCandle    = 0;      // 1 - last fully formed candle, 0 - current forming candle
 input int     lookBackRange  = 5;
 
 int OnInit()    {
@@ -36,9 +36,10 @@ int OnCalculate(const int rates_total,
                 const long &tick_volume[],
                 const long &volume[],
                 const int &spread[])        {
-    if (NewDay2())
+    if (NewDay2() )
       GlobalVariableSet(StringConcatenate(Symbol(), "_volatility"), 0);
-    ProcessAlerts();
+    if (TimeDayOfWeek(TimeLocal()) > 0 && TimeDayOfWeek(TimeLocal()) < 6)
+        ProcessAlerts();
     return(0);
 }//OnCalculate()
 
