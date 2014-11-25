@@ -56,28 +56,45 @@ if ( TimeDayOfWeek( iTime(NULL, PERIOD_D1, iDay+yesterday) ) == 0 ) // if Sunday
    if (semafor < 7)   { //  7 = 1 + 2 + 4 = all flags set
 
     if(MathMod(semafor, 2) < 1 && (Low[AlertCandle] < iLow(NULL, PERIOD_D1,iDay+yesterday) || High[AlertCandle] > iHigh(NULL, PERIOD_D1,iDay+yesterday)) )  {
-      AlertText = Symbol() + ", " + TFToStr(Period()) + ": Price action outside yesterday's range. \rPrice = " + DoubleToStr(Bid, 5);
-      if (AlertEmailSubject > "")   SendMail(AlertEmailSubject,AlertText);
-      if(SendNotifications) SendNotification(AlertText);
-      GlobalVariableSet(StringConcatenate(Symbol(), "_volatility"), semafor+1);
-      return(0);
+        AlertText = Symbol() + ", " + TFToStr(Period()) + ": Price action outside yesterday's range. \rPrice = " + DoubleToStr(Bid, 5);
+        if (AlertEmailSubject > "")   SendMail(AlertEmailSubject,AlertText);
+        if(SendNotifications) SendNotification(AlertText);
+        GlobalVariableSet(StringConcatenate(Symbol(), "_volatility"), semafor+1);
+        return(0);
     }
-    if(MathMod(semafor, 4) < 2 && iHigh(NULL, PERIOD_D1, AlertCandle) - iLow(NULL, PERIOD_D1, AlertCandle) >  iATR(NULL,PERIOD_D1,3,iDay+yesterday) )  {
-      AlertText = Symbol() + ", " + TFToStr(Period()) + ": Price action outside 3-days ATR. \rPrice = " + DoubleToStr(Bid, 5);
-      if (AlertEmailSubject > "")   SendMail(AlertEmailSubject,AlertText);
-      if(SendNotifications) SendNotification(AlertText);
-      GlobalVariableSet(StringConcatenate(Symbol(), "_volatility"), semafor+2);
-      return(0);
+    if(MathMod(semafor, 4) < 2 && iHigh(NULL, PERIOD_D1, AlertCandle) - iLow(NULL, PERIOD_D1, AlertCandle) >  f_TrueATR(3,iDay) )  {
+        Print("True ATR = "+f_TrueATR(3, iDay));
+        AlertText = Symbol() + ", " + TFToStr(Period()) + ": Price action outside 3-days ATR. \rPrice = " + DoubleToStr(Bid, 5);
+        if (AlertEmailSubject > "")   SendMail(AlertEmailSubject,AlertText);
+        if(SendNotifications) SendNotification(AlertText);
+        GlobalVariableSet(StringConcatenate(Symbol(), "_volatility"), semafor+2);
+        return(0);
     }
     if(semafor < 4  && (Low[AlertCandle] < L || High[AlertCandle] > H) )  {
-      AlertText = Symbol() + ", " + TFToStr(Period()) + ": Price action outside last days range. \rPrice = " + DoubleToStr(Bid, 5);
-      if (AlertEmailSubject > "")   SendMail(AlertEmailSubject,AlertText);
-      if(SendNotifications) SendNotification(AlertText);
-      GlobalVariableSet(StringConcatenate(Symbol(), "_volatility"), semafor+4);
-      return(0);
+        AlertText = Symbol() + ", " + TFToStr(Period()) + ": Price action outside last days range. \rPrice = " + DoubleToStr(Bid, 5);
+        if (AlertEmailSubject > "")   SendMail(AlertEmailSubject,AlertText);
+        if(SendNotifications) SendNotification(AlertText);
+        GlobalVariableSet(StringConcatenate(Symbol(), "_volatility"), semafor+4);
+        return(0);
     }
 
    }
 
     return(0);
   }
+
+double f_TrueATR(int Range, int iD) { //weź trzy ostatnie sesje odrzucając niedziele
+    double sum = 0.0;
+    int loop = 0;
+    int i = iD+1; //iD should first 
+    while(loop < Range ) {
+        if (TimeDayOfWeek( iTime(NULL, PERIOD_D1, i) ) == 0) {
+            i +=1;
+            break;
+        }
+        sum += (iHigh(NULL, PERIOD_D1,i) - iLow(NULL, PERIOD_D1,i));
+        loop += 1;
+    }
+    double true_ATR = NormalizeDouble(1.0/Range * sum, Digits);
+    return(true_ATR);
+}
