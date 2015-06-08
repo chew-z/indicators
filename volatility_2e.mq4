@@ -57,13 +57,15 @@ int OnCalculate(const int rates_total,
 
 int ProcessAlerts(double TrATR)   {                                                                                                                         //
 AlertText =  "";
-double spread = Ask - Bid;
-H = iHigh(NULL, PERIOD_D1, iHighest(NULL, PERIOD_D1, MODE_HIGH, lookBackRange, iD+1)); // kurwa magic ale chyba dzia³a
-L = iLow (NULL, PERIOD_D1, iLowest (NULL, PERIOD_D1, MODE_LOW, lookBackRange, iD+1));
+//double spread = Ask - Bid;
 int semafor = GlobalVariableGet(StringConcatenate(Symbol(), "_volatility"));
 int yesterday = AlertCandle + 1;
-if ( TimeDayOfWeek( iTime(NULL, PERIOD_D1, iD+yesterday) ) == 0 ) // if Sunday take previous (Friday's) bar
+if ( TimeDayOfWeek( iTime(NULL, PERIOD_D1, iD+yesterday) ) == 0 ) {// if Sunday take previous (Friday's) bar
    yesterday = AlertCandle + 2;
+}
+// a to?
+H = iHigh(NULL, PERIOD_D1, iHighest(NULL, PERIOD_D1, MODE_HIGH, lookBackRange, iD+yesterday)); // kurwa magic ale chyba dzia³a
+L = iLow (NULL, PERIOD_D1, iLowest (NULL, PERIOD_D1, MODE_LOW, lookBackRange, iD+yesterday));
 
    if (semafor < 7)   { //  7 = 1 + 2 + 4 = all flags set
 
@@ -100,19 +102,15 @@ double f_TrueATR(int Range, int iDay) { //weź trzy ostatnie sesje odrzucając n
     int loop = 0;
     int i = iD+1; //iD should first
     while(loop < Range ) {
-        Print("checking ", TimeDay( iTime(NULL, PERIOD_D1, i) ) );
         if (TimeDayOfWeek( iTime(NULL, PERIOD_D1, i) ) == 0) {
-            Print( "skipping Sunday ", TimeDayOfWeek( iTime(NULL, PERIOD_D1, i) ) );
+            Print( "skipping Sunday ", TimeDay( iTime(NULL, PERIOD_D1, i) ) );
             i +=1;
         } else {
             sum += (iHigh(NULL, PERIOD_D1,i) - iLow(NULL, PERIOD_D1,i));
-            Print("Day's High - Low = ", sum);
             i +=1;
             loop += 1;
         }
     }
-    Print("Suma ATR = ", sum);
     true_ATR = NormalizeDouble(1.0/Range * sum, Digits);
-    Print("true_ATR ", true_ATR);
     return(true_ATR);
 }
