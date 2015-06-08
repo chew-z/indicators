@@ -55,7 +55,7 @@ int OnCalculate(const int rates_total,
     return(0);
 }//OnCalculate()
 
-int ProcessAlerts(double TrATR)   {                                                                                                                         //
+int ProcessAlerts(double TrueATR)   {                                                                                                                         //
 AlertText =  "";
 //double spread = Ask - Bid;
 int semafor = GlobalVariableGet(StringConcatenate(Symbol(), "_volatility"));
@@ -63,7 +63,7 @@ int yesterday = AlertCandle + 1;
 if ( TimeDayOfWeek( iTime(NULL, PERIOD_D1, iD+yesterday) ) == 0 ) {// if Sunday take previous (Friday's) bar
    yesterday = AlertCandle + 2;
 }
-// a to?
+// a to? Tutaj potrzeba dobrej funkcji wyboru dni (barów) a nie jakiś sztuczek na kolanie.
 H = iHigh(NULL, PERIOD_D1, iHighest(NULL, PERIOD_D1, MODE_HIGH, lookBackRange, iD+yesterday)); // kurwa magic ale chyba dzia³a
 L = iLow (NULL, PERIOD_D1, iLowest (NULL, PERIOD_D1, MODE_LOW, lookBackRange, iD+yesterday));
 
@@ -76,8 +76,8 @@ L = iLow (NULL, PERIOD_D1, iLowest (NULL, PERIOD_D1, MODE_LOW, lookBackRange, iD
         GlobalVariableSet(StringConcatenate(Symbol(), "_volatility"), semafor+1);
         return(0);
     }
-    if(MathMod(semafor, 4) < 2 && iHigh(NULL, PERIOD_D1, AlertCandle) - iLow(NULL, PERIOD_D1, AlertCandle) > TrATR )  {
-        Print("True ATR = " + f_TrueATR(3, iD));
+    if(MathMod(semafor, 4) < 2 && iHigh(NULL, PERIOD_D1, AlertCandle) - iLow(NULL, PERIOD_D1, AlertCandle) > TrueATR )  {
+        Print("True ATR = " + TrueATR);
         AlertText = Symbol() + ", " + TFToStr(Period()) + ": Price action outside 3-days ATR. \rPrice = " + DoubleToStr(Bid, 5);
         if (AlertEmailSubject > "")   SendMail(AlertEmailSubject,AlertText);
         if(SendNotifications) SendNotification(AlertText);
@@ -93,10 +93,10 @@ L = iLow (NULL, PERIOD_D1, iLowest (NULL, PERIOD_D1, MODE_LOW, lookBackRange, iD
     }
 
    }
-
     return(0);
   }
 
+// Może trzeba przenieść to do biblioteki?
 double f_TrueATR(int Range, int iDay) { //weź trzy ostatnie sesje odrzucając niedziele
     double sum = 0.0;
     int loop = 0;
