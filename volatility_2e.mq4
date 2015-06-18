@@ -16,7 +16,7 @@
 //---- alerts
 input int     AlertCandle    = 0;      // 1 - last fully formed candle, 0 - current forming candle
 input int     lookBackRange  = 5;
-double true_ATR = 0.0;
+double true_ATR ;
 int iD = 0;
 
 int OnInit()    {
@@ -49,6 +49,8 @@ int OnCalculate(const int rates_total,
       GlobalVariableSet(StringConcatenate(Symbol(), "_volatility"), 0);
       iD = iBarShift(NULL, PERIOD_D1, Time[AlertCandle], false); // This might be tricky!!!
       true_ATR = f_TrueATR(3, iD);  //compute TrueATR once a day not on every tick
+      // but after indicator restart this generates buggy mesages especially in this indicator
+      Print("NewDay2");
     }
     if (TimeDayOfWeek(TimeLocal()) > 0 && TimeDayOfWeek(TimeLocal()) < 6)
         ProcessAlerts(true_ATR);
