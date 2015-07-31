@@ -11,7 +11,7 @@
 #property indicator_buffers 0
 
 
-extern int    Equity_Interval     =  300;
+extern int    Equity_Interval     = 300;
 static int    handle              = 0;
 static int    i                   = 0;
 
@@ -29,8 +29,11 @@ void OnTimer() {
      i += 1;
      datetime t = TimeLocal();
      if(FileSeek(handle, 0, SEEK_END)) {
-            //Print("appending to file");
             FileWrite(handle, i, t, AccountEquity(), AccountProfit());
+            if ( i % 12 == 0 ) { //Once in an hour save to disk
+                FileFlush( handle );
+                //Print("saving to file", "Equity.csv");
+            }
      }
     return; // exit
 }
