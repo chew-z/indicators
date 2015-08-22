@@ -17,7 +17,7 @@ static int    i                   = 0;
 
 int OnInit()    {
         EventSetTimer(Equity_Interval);
-        handle = FileOpen("Equity.csv", FILE_CSV|FILE_READ|FILE_WRITE, ',');
+        handle = FileOpen("Equity.csv", FILE_CSV|FILE_READ|FILE_WRITE, ';');
         return(INIT_SUCCEEDED);
     }
 void OnDeinit(const int reason){
@@ -27,13 +27,13 @@ void OnDeinit(const int reason){
 }
 void OnTimer() {
      i += 1;
+     if ( i % 12 == 0 ) { //Once in an hour save to disk
+        FileFlush( handle );
+        //It keeps file locked so perhaps I should change the logic. But works OK.
+    }
      datetime t = TimeLocal();
      if(FileSeek(handle, 0, SEEK_END)) {
             FileWrite(handle, i, t, AccountEquity(), AccountProfit());
-            if ( i % 12 == 0 ) { //Once in an hour save to disk
-                FileFlush( handle );
-                //Print("saving to file", "Equity.csv");
-            }
      }
     return; // exit
 }
