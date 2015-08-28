@@ -14,7 +14,7 @@
 extern int    Equity_Interval     = 300;
 static int    handle              = 0;
 static int    i                   = 0;
-static double eq                  = 0.0;
+double eq                         = 0.0;
 static double max_eq              = 0.0;
 
 int OnInit()    {
@@ -40,19 +40,19 @@ void OnTimer() {
         max_eq = eq;
      if (eq > max_eq)
         max_eq = eq;
-     if (eq < 0.98 * max_eq) {
+     if (eq <= 0.98 * max_eq && eq > 0.95 * max_eq) {
         AlertEmailSubject = "EQUITY WARNING";
         AlertText = "You are losing money. Equity droped more then 2% from maximum. Can you manage?";
-        SendMail(AlertEmailSubject, AlertText);
+        //SendMail(AlertEmailSubject, AlertText);
         SendNotification(AlertText);
      }
-     if (eq < 0.95 * max_eq) {
+     if (eq <= 0.95 * max_eq && eq > 0.90 * max_eq) {
         AlertEmailSubject = "EQUITY ALERT";
         AlertText = "You are losing too much money too quickly. Equity droped more then 5% from maximum.\nGet out! Fight another day.";
         SendMail(AlertEmailSubject, AlertText);
         SendNotification(AlertText);
      }
-     if (eq < 0.90 * max_eq) {
+     if (eq <= 0.90 * max_eq) {
         AlertEmailSubject = "EQUITY DANGER";
         AlertText = "Losing so much money that quickly is self-destructive! You have to get out!!! NOW!";
         SendMail(AlertEmailSubject, AlertText);
