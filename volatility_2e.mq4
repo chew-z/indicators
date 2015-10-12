@@ -1,10 +1,10 @@
 //+------------------------------------------------------------------+
-//|                                             volatility_2c.mq4    |
+//|                                             volatility_2e.mq4    |
 //| wysyła alerty związne ze zmiennością                             |
 //| (ATR, dzienny zakres etc.)                                       |
 //+------------------------------------------------------------------+
-#property copyright "Copyright © 2014, chew-z"
-#property link      "volatility_2c"
+#property copyright "Copyright © 2014,2015 chew-z"
+#property link      "volatility_2e"
 #include <TradeTools\TradeTools5.mqh>
 #include <TradeContext.mq4>
 #property indicator_chart_window
@@ -16,8 +16,6 @@
 //---- alerts
 input int     AlertCandle    = 0;      // 1 - last fully formed candle, 0 - current forming candle
 input int     lookBackRange  = 5;
-double true_ATR ;
-int iD = 0;
 
 int OnInit()    {
    AlertEmailSubject = Symbol() + " volatility alert";
@@ -44,6 +42,8 @@ int OnCalculate(const int rates_total,
                 const long &tick_volume[],
                 const long &volume[],
                 const int &spread[])        {
+double true_ATR ;
+int iD = 0;
 
     if (NewDay2() ) {
       GlobalVariableSet(StringConcatenate(Symbol(), "_volatility"), 0);
@@ -53,11 +53,11 @@ int OnCalculate(const int rates_total,
       Print("NewDay2");
     }
     if (TimeDayOfWeek(TimeLocal()) > 0 && TimeDayOfWeek(TimeLocal()) < 6)
-        ProcessAlerts(true_ATR);
+        ProcessAlerts(true_ATR, iD);
     return(0);
 }//OnCalculate()
 
-int ProcessAlerts(double TrueATR)   {                                                                                                                         //
+int ProcessAlerts(double TrueATR, int iD)   {                                                                                                                         //
 AlertText =  "";
 //double spread = Ask - Bid;
 int semafor = GlobalVariableGet(StringConcatenate(Symbol(), "_volatility"));
@@ -97,22 +97,3 @@ L = iLow (NULL, PERIOD_D1, iLowest (NULL, PERIOD_D1, MODE_LOW, lookBackRange, iD
    }
     return(0);
   }
-
-// Może trzeba przenieść to do biblioteki?
-double f_TrueATR(int Range, int iDay) { //weź trzy ostatnie sesje odrzucając niedziele
-    double sum = 0.0;
-    int loop = 0;
-    int i = iD+1; //iD should first
-    while(loop < Range ) {
-        if (TimeDayOfWeek( iTime(NULL, PERIOD_D1, i) ) == 0) {
-            Print( "skipping Sunday ", TimeDay( iTime(NULL, PERIOD_D1, i) ) );
-            i +=1;
-        } else {
-            sum += (iHigh(NULL, PERIOD_D1,i) - iLow(NULL, PERIOD_D1,i));
-            i +=1;
-            loop += 1;
-        }
-    }
-    true_ATR = NormalizeDouble(1.0/Range * sum, Digits);
-    return(true_ATR);
-}
