@@ -1,15 +1,15 @@
 //+------------------------------------------------------------------+
-//|                                        trendline_2b.mq4   |
-//| rysuje linie trendu                                         |
-//| ignoruje recent top/bottom, dzieli na dwa niezależne przedziały|
+//|                                        trendline_2b.mq4          |
+//| rysuje linie trendu w oparciu o regresję liniową                 |
+//|                                                                  |
 //+------------------------------------------------------------------+
-#property copyright "Copyright © 2014, chew-z"
-#property link      "trendline_2b"
-#include <TradeTools.mqh>
+#property copyright "Copyright © 2014-2015, chew-z"
+#property link      "trendline_4a"
+#include <TradeTools\TradeTools5.mqh>
 #include <TradeContext.mq4>
 #property indicator_chart_window
 #property indicator_buffers 3
-#property indicator_color1 Orange      // Color of the High trendline
+#property indicator_color1 Orange   // Color of the High trendline
 #property indicator_color2 Yellow   // Color of the Low trendline
 #property indicator_color3 Blue
 //---- indicator parameters
@@ -24,26 +24,104 @@ datetime       LastRedrawTime           = -999999;
 string         AlertTextCrossUp         = " trendline cross UP";
 string         AlertTextCrossDown       = " trendline cross DOWN";
 
-int init()    {
-   AlertEmailSubject = Symbol() + " trendline alert";
-   LastAlertTime = Time[0]; //experimental - supresses series of crazy alerts sent after terminal start
+int OnInit()    {
+    AlertEmailSubject = Symbol() + " trendline alert";
+    LastAlertTime = Time[0]; //experimental - supresses series of crazy alerts sent after terminal start
 
-   SetIndexBuffer(2,N1Buffer);
-   SetIndexBuffer(1,Low1Buffer);
-   SetIndexBuffer(0,High1Buffer);
+    GlobalVariableSet(StringConcatenate(Symbol(), "_trendline"), 0);
 
-   SetIndexStyle (2,DRAW_LINE,STYLE_DASH, 1);
-   SetIndexStyle (1,DRAW_LINE,STYLE_DASH, 1);
-   SetIndexStyle (0,DRAW_LINE,STYLE_DASH, 1);
+    SetIndexBuffer(2,N1Buffer);
+    SetIndexBuffer(1,Low1Buffer);
+    SetIndexBuffer(0,High1Buffer);
 
-   SetIndexDrawBegin(2,0);
-   SetIndexDrawBegin(1,0);
-   SetIndexDrawBegin(0,0);
-   return(0);
+    SetIndexStyle (2,DRAW_LINE,STYLE_DASH, 1);
+    SetIndexStyle (1,DRAW_LINE,STYLE_DASH, 1);
+    SetIndexStyle (0,DRAW_LINE,STYLE_DASH, 1);
+
+    SetIndexDrawBegin(2,0);
+    SetIndexDrawBegin(1,0);
+    SetIndexDrawBegin(0,0);
+    if( !IsConnected() )
+        Sleep( 5000 );  //wait 5s for establishing connection to trading server
+    //Sleep() is automatically passed during testing
+    return(INIT_SUCCEEDED);
   }
-int deinit()    {
-   return(0);
+
+void OnDeinit(const int reason){
+   GlobalVariableDel(StringConcatenate(Symbol(), "_trendline"));
+   Print(__FUNCTION__,"_Deinitalization reason code = ", getDeinitReasonText(reason));
    }
+
+int OnCalculate(const int rates_total,
+                const int prev_calculated,
+                const datetime &time[],
+                const double &open[],
+                const double &high[],
+                const double &low[],
+                const double &close[],
+                const long &tick_volume[],
+                const long &volume[],
+                const int &spread[])        {
+
+    int i, half, Counted_bars;          // Number of counted bars
+    if (Time[0] > LastRedrawTime) { // redraw indicator once in a bartime
+        Counted_bars = Bars - rangeX + 1; //tyle bars NIE musimy przelecieć
+        LastRedrawTime = Time[0];
+        Print("trendline_4a - indicator repaint "+TimeToStr(LastRedrawTime, TIME_MINUTES));
+    }  else {
+        Counted_bars = IndicatorCounted();  // Number of counted bars
+    }
+    i = Bars-Counted_bars-1;            // Index of the first uncounted
+    double s_Y = 0.0;
+    double s_X = 0.0;
+    for(j = i, j > 0, j--) {
+        s_Y += High[j];
+        s_Y += j;
+    }
+    m_Y = s_Y / j;
+    m_X = s_X / j;
+    for(j = i, j > 0, j--) {
+        s_Y += High[j];
+        s_Y += j;
+    }
+
+
+
+}
+
+double mean_H(int n) {
+    double sigma = 0.0;
+    for(j = n, j > 0, j--) {
+        sigma += High[j];
+    }
+    return sigma / n;
+}
+
+double std(int n, double m) {
+    double sigma = 0.0;
+    for(j = n, j > 0, j--) {
+        sigma += MathPow(High[j] - m)
+    }
+    return 1.0 / (n-1) * sigma;
+}
+
+double pearson(int n, double m_Y) {
+    double sum_xy = 0.0;
+    double sum_sq_v_x = 0.0;
+    double sum_sq_v_y = 0.0;
+    double m_X = n * 0.5 * (High[n]+High[1]) //sum of arithmetic progression
+    for(j = n, j > 0, j--) {
+        double var_x = j - m_X;
+        double var_y = High[j] - m_Y;
+        sum_xy += var_x * var_y;
+        sum_sq_v_x += MathPow(var_x, 2);
+        sum_sq_v_y += MathPow(var_y, 2);
+    }
+    return sum_xy / MathSqrt(sum_sq_v_x * sum_sq_v_y);
+}
+
+
+###############################################################################################
 int start()    {
      int i, half, Counted_bars;          // Number of counted bars
      if (Time[0] > LastRedrawTime) { // redraw indicator once in a bartime
