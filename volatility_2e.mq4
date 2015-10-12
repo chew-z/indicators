@@ -42,19 +42,25 @@ int OnCalculate(const int rates_total,
                 const long &tick_volume[],
                 const long &volume[],
                 const int &spread[])        {
-double true_ATR ;
-int iD = 0;
-
-    if (NewDay2() ) {
-      GlobalVariableSet(StringConcatenate(Symbol(), "_volatility"), 0);
-      iD = iBarShift(NULL, PERIOD_D1, Time[AlertCandle], false); // This might be tricky!!!
-      true_ATR = f_TrueATR(3, iD);  //compute TrueATR once a day not on every tick
-      // but after indicator restart this generates buggy mesages especially in this indicator
-      Print("NewDay2");
-    }
-    if (TimeDayOfWeek(TimeLocal()) > 0 && TimeDayOfWeek(TimeLocal()) < 6)
+static double true_ATR ;
+int iD ;
+// repaint only on new bar, chart refresh etc.
+// http://forum.mql4.com/64114
+    if (prev_calculated != rates_total) {
+        iD = iBarShift(NULL, PERIOD_D1, Time[AlertCandle], false); // This might be tricky!!!
+        true_ATR = f_TrueATR(3, iD);           //compute TrueATR on repaint not on every tick
+        // but after indicator restart this generates buggy mesages especially in this indicator
+        if (NewDay2() ) {
+          GlobalVariableSet(StringConcatenate(Symbol(), "_volatility"), 0);
+          Print("NewDay2");
+        }
+    } //prev_calc
+// but alerts process every tick (excluding Sundays and Saturdays)
+    if (TimeDayOfWeek(TimeLocal()) > 0 && TimeDayOfWeek(TimeLocal()) < 6) {
+        // Print("TrueATR " + true_ATR);
         ProcessAlerts(true_ATR, iD);
-    return(0);
+    }
+    return(rates_total);
 }//OnCalculate()
 
 int ProcessAlerts(double TrueATR, int iD)   {                                                                                                                         //
