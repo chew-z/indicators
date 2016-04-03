@@ -49,7 +49,7 @@ void OnTimer() {
      int semafor = GlobalVariableGet(StringConcatenate(Symbol(), "_volatility"));
      if (eq > max_eq)
         max_eq = eq;
-     if (eq <= 0.90 * max_eq && semafor < 5 ) {
+     if (eq > 0.50 * max_eq && eq <= 0.90 * max_eq && semafor < 5 ) {
         AlertEmailSubject = "EQUITY DANGER";
         AlertText = "Losing so much money that quickly is self-destructive! You have to get out!!! NOW!";
         SendMail(AlertEmailSubject, AlertText);
